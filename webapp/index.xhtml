@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:f="http://java.sun.com/jsf/core"
+   	 xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:p="http://primefaces.org/ui"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:head>
+    	<title>JSF with Primefaces example</title>
+    </h:head>
+    
+    <h:body bgcolor="white">
+    	<h2>Welcome #{someBean.someProperty}</h2>
+  <h:form>
+   <p:growl id="msgs" showDetail="true"/>
+   <p:tabView id="tabs">
+   <p:tab title="Cars" >
+    	<p:dataTable id="checkboxDT" var="car" value="#{dtSortView.cars3}" 
+    	selection="#{dtSortView.selectedCars}"
+    	rowKey="#{car.id}"
+    	rows="10"
+    	paginator="true"
+    	paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="5,10,15"
+        editable="true"
+        editMode="cell"
+        widgetVar="cellCars"
+    	style="margin-bottom:40px">
+        <f:facet name="header">
+            Multiselection sortable editable table
+        </f:facet>
+        <p:ajax event="sort" skipChildren="false" />
+        <p:ajax event="cellEdit" listener="#{dtSortView.onCellEdit}" update="@form:msgs" />
+        
+      	<p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+        <p:column headerText="Id" sortBy="#{car.id}">
+            <p:cellEditor>
+                  <f:facet name="output"><h:outputText value="#{car.id}" /></f:facet>
+                  <f:facet name="input"><p:inputText id="modelInput" value="#{car.id}" style="width:96%"/></f:facet>
+              </p:cellEditor>
+        </p:column>
+ 
+        <p:column headerText="Year" sortBy="#{car.year}">
+           <p:cellEditor>
+               <f:facet name="output"><h:outputText value="#{car.year}" /></f:facet>
+               <f:facet name="input"><p:inputText value="#{car.year}" style="width:96%" label="Year"/></f:facet>
+           </p:cellEditor>
+        </p:column>
+ 
+        <p:column headerText="Brand" sortBy="#{car.brand}">
+           <p:cellEditor>
+               <f:facet name="output"><h:outputText value="#{car.brand}" /></f:facet>
+               <f:facet name="input">
+                   <h:selectOneMenu value="#{car.brand}" style="width:100%">
+                       <f:selectItems value="#{dtSortView.brands}" var="man" itemLabel="#{man}" itemValue="#{man}" />
+                   </h:selectOneMenu>
+               </f:facet>
+           </p:cellEditor>
+        </p:column>
+ 
+        <p:column headerText="Color" sortBy="#{car.color}">
+           <p:cellEditor>
+               <f:facet name="output"><h:outputText value="#{car.color}" /></f:facet>
+               <f:facet name="input">
+                   <h:selectOneMenu value="#{car.color}" style="width:100%">
+                       <f:selectItems value="#{dtSortView.colors}" var="color" itemLabel="#{color}" itemValue="#{color}" />
+                   </h:selectOneMenu>
+               </f:facet>
+           </p:cellEditor>
+        </p:column>
+        <f:facet name="footer">
+       	 <p>In total there are #{fn:length(dtSortView.cars3)} cars.</p>
+            <p:commandButton process="checkboxDT" update="@form:tabs:multiCarDetail" icon="ui-icon-search" value="View selected" oncomplete="PF('multiCarDialog').show()" />
+        </f:facet>
+    </p:dataTable>
+    <p:dialog header="Selected Cars" widgetVar="multiCarDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true" width="200">
+        <p:outputPanel id="multiCarDetail" style="text-align:center;">
+            <ui:repeat value="#{dtSortView.selectedCars}" var="car">
+                <h:outputText value="#{car.id} - #{car.brand}" style="display:block"/>
+            </ui:repeat>
+        </p:outputPanel>
+    </p:dialog>
+    <p:contextMenu for="checkboxDT" widgetVar="cMenu">   
+       <p:menuitem value="Edit Cell" icon="ui-icon-search" onclick="PF('cellCars').showCellEditor();return false;"/>  
+       <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="PF('cMenu').hide()"/>  
+   </p:contextMenu> 
+   </p:tab>
+   <p:tab title="Motorcycles"></p:tab>
+   <p:tab title="Boats"></p:tab>
+   </p:tabView>
+    </h:form>
+    </h:body>
+</html>
